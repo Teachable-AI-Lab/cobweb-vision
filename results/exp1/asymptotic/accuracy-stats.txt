@@ -1,0 +1,7 @@
+Mean asymptotic performance (accuracy) / standard deviation:
+
+cobweb4v: 0.95137 / 0.00245404
+fc-slow: 0.95127999 / 0.00940661
+fc-cnn-slow: 0.97350001 / 0.00719584
+
+
