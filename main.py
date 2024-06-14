@@ -28,6 +28,11 @@ def accuracy2csv(general_config, model_config, data_config, test_accs, specific_
 	model = model_config['type']
 	if model == 'cobweb':
 		model = 'cobweb4v'
+		if general_config['compare_cobweb']:
+			model = model + '-acuity-cutoff' if model_config['acuity_cutoff'] else model
+			model = model + '-probabilistic-cu' if not model_config['use_mutual_info'] else model
+			model = model + '-' + model_config['predict_level']
+			model = model + '-KL' if model_config['use_kl'] else model + '-noKL'
 	seed = general_config['seed']
 	label = general_config['label']
 	experiment = general_config['type']
@@ -150,9 +155,17 @@ def accuracy2csv(general_config, model_config, data_config, test_accs, specific_
 		else:
 			file_name = f"L{label}_{model}-{model_config['nn_ver']}_S{seed}.csv"
 	else:
-		file_name = f"L{label}_{model}_S{seed}.csv"
+		file_name = f"L{label}_{model}_S{seed}"
+		# if general_config['compare_cobweb']:
+		# 	file_name = file_name + "_acuity-cutoff" if model_config['acuity_cutoff'] else file_name
+		# 	file_name = file_name + "_probabilistic-cu" if not model_config['use_mutual_info'] else file_name
+		file_name = file_name + ".csv"
+		# file_name = f"L{label}_{model}_S{seed}.csv"
 	file_path = os.path.join(folder_path, file_name)
-	df.to_csv(file_path, index=False)
+	if os.path.isfile(file_path):
+		df.to_csv(file_path, mode='a', header=False, index=False)
+	else:
+		df.to_csv(file_path, index=False)
 
 
 
@@ -169,6 +182,7 @@ def experiments(args):
 	'paper': False,
 	'test_once': False,
 	'exp1_type': args.exp1_type,
+	'compare_cobweb': False
 	}
 
 	model_config = {
@@ -187,6 +201,10 @@ def experiments(args):
 	'cobweb_nodes': args.cobweb_nodes,
 	'sample_size': args.ewc_sample_size,
 	'lambda': args.ewc_lambda,
+	'acuity_cutoff': False,
+	'use_mutual_info': True,
+	'predict_level': args.predict_level,
+	'use_kl': True,
 	}
 
 	data_config = {
@@ -229,6 +247,14 @@ def experiments(args):
 		general_config['paper'] = True
 	if checkattr(args, 'test_once'):
 		general_config['test_once'] = True
+	if checkattr(args, 'acuity_cutoff'):
+		model_config['acuity_cutoff'] = True
+	if checkattr(args, 'no_mutual_info'):
+		model_config['use_mutual_info'] = False
+	if checkattr(args, 'no_kl'):
+		model_config['use_kl'] = False
+	if checkattr(args, 'compare_cobweb'):
+		general_config['compare_cobweb'] = True
 
 
 	# Cuda:

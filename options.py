@@ -14,6 +14,8 @@ def general_options(parser):
 		help='when running experiment 1, after obtaining all the training splits, you can either test the performance after training on each split (all), \
 		or test after training all splits (asymptotic)')
 	parser.add_argument('--test-once', action='store_true', help='only test the trained model with the test data after the last training split')
+	parser.add_argument('--compare-cobweb', action='store_true', help='indicate that the experiment is used to compare configurations within Cobweb,\
+		and the output csv will include the information of the cobweb configurations')
 	return parser
 
 
@@ -56,6 +58,10 @@ def model_options(parser):
 		help='the maximum number of nodes considered in predictions resembling for Cobweb/4V')
 	parser.add_argument('--ewc-sample-size', type=int, default=1024, help='the sample size when employing the EWC technique')
 	parser.add_argument('--ewc-lambda', type=int, default=100, help='the value of lambda when employing the EWC technique')
+	parser.add_argument('--acuity-cutoff', action='store_true', help='do acuity cutoff in the Cobweb tree (align to original Cobweb/3)')
+	parser.add_argument('--no-mutual-info', action='store_true', help='use probabilistic CU instead of mutual information CU in Cobweb tree')
+	parser.add_argument('--predict-level', type=str, default='multiple', choices=['single-leaf', 'single-basic'], help='way of prediction in cobweb tree')
+	parser.add_argument('--no-kl', action='store_true', help='do not use KL divergence')
 	return parser
 
 

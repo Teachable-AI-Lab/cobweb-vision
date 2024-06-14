@@ -94,8 +94,12 @@ def exp1_cobweb(general_config, model_config, data_config, dataset_tr, dataset_t
 		loaders_tr = loaders_tr[:data_config['n_split_trained']]
 
 	# Models and optimizers:
+	use_mutual_info = model_config['use_mutual_info']
+	acuity_cutoff = model_config['acuity_cutoff']
+	use_kl = model_config['use_kl']
 	example_imgs, _ = next(iter(loaders_tr[0]))
-	model = CobwebTorchTree(example_imgs.shape[1:])
+	model = CobwebTorchTree(shape=example_imgs.shape[1:], 
+		use_info=use_mutual_info, acuity_cutoff=acuity_cutoff, use_kl=use_kl)
 
 	# Store the test accuracies
 	test_accs = []
@@ -123,14 +127,14 @@ def exp1_cobweb(general_config, model_config, data_config, dataset_tr, dataset_t
 				for j in range(len(loaders_te)):
 					if verbose:
 						print("\n----> Model Testing with labels {} <----".format(dataloaders.labels_te[j]))
-					acc = models_cobweb.test(model, loaders_te[j], model_config['cobweb_nodes'])
+					acc = models_cobweb.test(model, loaders_te[j], model_config['predict_level'], model_config['cobweb_nodes'])
 					test_accs.append(acc)
 
 		else:
 			for j in range(len(loaders_te)):
 				if verbose:
 					print("\n----> Model Testing with labels {} <----".format(dataloaders.labels_te[j]))
-				acc = models_cobweb.test(model, loaders_te[j], model_config['cobweb_nodes'])
+				acc = models_cobweb.test(model, loaders_te[j], model_config['predict_level'], model_config['cobweb_nodes'])
 				print("Test accuracy: {}".format(acc))
 				test_accs.append(acc)
 
